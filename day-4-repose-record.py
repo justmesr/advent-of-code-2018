@@ -123,18 +123,19 @@ def get_slept_during(slept_times):
     return result
 
 def get_most_slept(slept):
-    most_slept = 0
-    slept_during = 0
-    guard = 0
+    result_guard = 0
+    result_slept_minute_times = 0
+    result_slept_minute = 0
 
     for guard_id, slept_times in slept.items():
-        currently_slept = sum(slept_times)
-        if currently_slept > most_slept:
-            most_slept = currently_slept
-            guard = guard_id
-            slept_during = get_slept_during(slept_times)
+        slept_minute_times = max(slept_times)
 
-    return slept_during, guard
+        if result_slept_minute_times < slept_minute_times:
+            result_guard = guard_id
+            result_slept_minute_times = slept_minute_times
+            result_slept_minute = get_slept_during(slept_times)
+
+    return result_slept_minute, result_guard
 
 def solve():
     lines = load_input()
