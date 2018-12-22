@@ -135,4 +135,26 @@ def solve():
     result = find_biggest_finite_area(plane)
     print(result)
 
-solve()
+def get_near(points, bounding_box, limit):
+    result = 0
+
+    for y in range(bounding_box[0].y, bounding_box[1].y + 1):
+        for x in range(bounding_box[0].x, bounding_box[1].x + 1):
+            distance = 0
+
+            current = Point(x, y)
+            for point in points:
+                distance += point_distance(current, point)
+
+            if distance < limit:
+                result += 1
+
+    return result
+
+def solve_bonus():
+    points = load_points()
+    bounding_box = get_bounding_box(points)
+    result = get_near(points, bounding_box, 10000)
+    print(result)
+
+solve_bonus()
