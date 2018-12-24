@@ -8,12 +8,18 @@ def tree_sum(cursor, values):
     added = values[cursor]
     cursor += 1
 
-    for _ in range(children):
-        cursor, added_sum = tree_sum(cursor, values)
-        result += added_sum
+    child = [0] * children
+    for i in range(children):
+        cursor, child[i] = tree_sum(cursor, values)
 
     for _ in range(added):
-        result += values[cursor]
+        metadata = values[cursor]
+
+        if children == 0:
+            result += metadata
+        elif metadata > 0 and metadata <= children:
+            result += child[metadata - 1]
+
         cursor += 1
 
     return (cursor, result)
