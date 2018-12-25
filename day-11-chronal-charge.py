@@ -15,35 +15,46 @@ def generate_grid(size, serial):
 
     return grid
 
-def get_kernel_power_level(y, x, kernel_size, grid):
-    result = 0
+def make_prefix_grid(grid):
+    prefix_grid = [[0 for j in range(len(grid[0]))] for i in range(len(grid))]
 
-    for i in range(kernel_size):
-        for j in range(kernel_size):
-            result += grid[y + i][x + j]
+    for i in range(1, len(grid)):
+        for j in range(1, len(grid[0])):
+            prefix_grid[i][j] = grid[i][j] + prefix_grid[i - 1][j] + prefix_grid[i][j - 1] - prefix_grid[i - 1][j - 1]
 
-    return result
+    return prefix_grid
 
-def find_biggest_kernel(grid, kernel_size):
-    x, y = 0, 0
+def get_kernel_power_level(start, end, prefix_grid):
+    x1, y1 = start
+    x2, y2 = end
+    return prefix_grid[y2][x2] - prefix_grid[y1 - 1][x2] - prefix_grid[y2][x1 - 1] + prefix_grid[y1 - 1][x1 - 1]
+
+def find_biggest_kernel(prefix_grid):
+    x, y, kernel_size = 0, 0, 1
     power_level = -maxsize
 
-    for i in range(1, len(grid) - kernel_size + 1):
-        for j in range(1, len(grid[0]) - kernel_size + 1):
-            kernel_power_level = get_kernel_power_level(i, j, kernel_size, grid)
-            if kernel_power_level > power_level:
-                power_level = kernel_power_level
-                x, y = j, i
+    for kernel in range(len(prefix_grid) - 1):
 
-    return (x, y)
+        for i in range(1, len(prefix_grid) - kernel):
+            for j in range(1, len(prefix_grid) - kernel):
+
+                kernel_power_level = get_kernel_power_level((j, i), (j + kernel, i + kernel), prefix_grid)
+                if kernel_power_level > power_level:
+                    power_level = kernel_power_level
+                    x, y = j, i
+                    kernel_size = kernel + 1
+
+        print(f'{kernel / (len(prefix_grid) - 2) * 100:.1f}%')
+
+    return (x, y, kernel_size)
 
 def solve():
     size = 300
-    kernel_size = 3
 
     serial = int(input())
     grid = generate_grid(size, serial)
-    result = find_biggest_kernel(grid, kernel_size)
+    prefix_grid = make_prefix_grid(grid)
+    result = find_biggest_kernel(prefix_grid)
 
     print(result)
 
